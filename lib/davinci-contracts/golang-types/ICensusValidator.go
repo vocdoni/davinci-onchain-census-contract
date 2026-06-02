@@ -1,0 +1,420 @@
+// Code generated - DO NOT EDIT.
+// This file is a generated binding and any manual changes will be lost.
+
+package contracts
+
+import (
+	"errors"
+	"math/big"
+	"strings"
+
+	ethereum "github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/event"
+)
+
+// Reference imports to suppress errors if they are not otherwise used.
+var (
+	_ = errors.New
+	_ = big.NewInt
+	_ = strings.NewReader
+	_ = ethereum.NotFound
+	_ = bind.Bind
+	_ = common.Big1
+	_ = types.BloomLookup
+	_ = event.NewSubscription
+	_ = abi.ConvertType
+)
+
+// ICensusValidatorMetaData contains all meta data concerning the ICensusValidator contract.
+var ICensusValidatorMetaData = &bind.MetaData{
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint88\",\"name\":\"previousWeight\",\"type\":\"uint88\"},{\"indexed\":false,\"internalType\":\"uint88\",\"name\":\"newWeight\",\"type\":\"uint88\"}],\"name\":\"WeightChanged\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"getCensusRoot\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"root\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"root\",\"type\":\"uint256\"}],\"name\":\"getRootBlockNumber\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"root\",\"type\":\"uint256\"}],\"name\":\"getTotalVotingPowerAtRoot\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"totalVotingPower\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+}
+
+// ICensusValidatorABI is the input ABI used to generate the binding from.
+// Deprecated: Use ICensusValidatorMetaData.ABI instead.
+var ICensusValidatorABI = ICensusValidatorMetaData.ABI
+
+// ICensusValidator is an auto generated Go binding around an Ethereum contract.
+type ICensusValidator struct {
+	ICensusValidatorCaller     // Read-only binding to the contract
+	ICensusValidatorTransactor // Write-only binding to the contract
+	ICensusValidatorFilterer   // Log filterer for contract events
+}
+
+// ICensusValidatorCaller is an auto generated read-only Go binding around an Ethereum contract.
+type ICensusValidatorCaller struct {
+	contract *bind.BoundContract // Generic contract wrapper for the low level calls
+}
+
+// ICensusValidatorTransactor is an auto generated write-only Go binding around an Ethereum contract.
+type ICensusValidatorTransactor struct {
+	contract *bind.BoundContract // Generic contract wrapper for the low level calls
+}
+
+// ICensusValidatorFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
+type ICensusValidatorFilterer struct {
+	contract *bind.BoundContract // Generic contract wrapper for the low level calls
+}
+
+// ICensusValidatorSession is an auto generated Go binding around an Ethereum contract,
+// with pre-set call and transact options.
+type ICensusValidatorSession struct {
+	Contract     *ICensusValidator // Generic contract binding to set the session for
+	CallOpts     bind.CallOpts     // Call options to use throughout this session
+	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
+}
+
+// ICensusValidatorCallerSession is an auto generated read-only Go binding around an Ethereum contract,
+// with pre-set call options.
+type ICensusValidatorCallerSession struct {
+	Contract *ICensusValidatorCaller // Generic contract caller binding to set the session for
+	CallOpts bind.CallOpts           // Call options to use throughout this session
+}
+
+// ICensusValidatorTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
+// with pre-set transact options.
+type ICensusValidatorTransactorSession struct {
+	Contract     *ICensusValidatorTransactor // Generic contract transactor binding to set the session for
+	TransactOpts bind.TransactOpts           // Transaction auth options to use throughout this session
+}
+
+// ICensusValidatorRaw is an auto generated low-level Go binding around an Ethereum contract.
+type ICensusValidatorRaw struct {
+	Contract *ICensusValidator // Generic contract binding to access the raw methods on
+}
+
+// ICensusValidatorCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
+type ICensusValidatorCallerRaw struct {
+	Contract *ICensusValidatorCaller // Generic read-only contract binding to access the raw methods on
+}
+
+// ICensusValidatorTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
+type ICensusValidatorTransactorRaw struct {
+	Contract *ICensusValidatorTransactor // Generic write-only contract binding to access the raw methods on
+}
+
+// NewICensusValidator creates a new instance of ICensusValidator, bound to a specific deployed contract.
+func NewICensusValidator(address common.Address, backend bind.ContractBackend) (*ICensusValidator, error) {
+	contract, err := bindICensusValidator(address, backend, backend, backend)
+	if err != nil {
+		return nil, err
+	}
+	return &ICensusValidator{ICensusValidatorCaller: ICensusValidatorCaller{contract: contract}, ICensusValidatorTransactor: ICensusValidatorTransactor{contract: contract}, ICensusValidatorFilterer: ICensusValidatorFilterer{contract: contract}}, nil
+}
+
+// NewICensusValidatorCaller creates a new read-only instance of ICensusValidator, bound to a specific deployed contract.
+func NewICensusValidatorCaller(address common.Address, caller bind.ContractCaller) (*ICensusValidatorCaller, error) {
+	contract, err := bindICensusValidator(address, caller, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &ICensusValidatorCaller{contract: contract}, nil
+}
+
+// NewICensusValidatorTransactor creates a new write-only instance of ICensusValidator, bound to a specific deployed contract.
+func NewICensusValidatorTransactor(address common.Address, transactor bind.ContractTransactor) (*ICensusValidatorTransactor, error) {
+	contract, err := bindICensusValidator(address, nil, transactor, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &ICensusValidatorTransactor{contract: contract}, nil
+}
+
+// NewICensusValidatorFilterer creates a new log filterer instance of ICensusValidator, bound to a specific deployed contract.
+func NewICensusValidatorFilterer(address common.Address, filterer bind.ContractFilterer) (*ICensusValidatorFilterer, error) {
+	contract, err := bindICensusValidator(address, nil, nil, filterer)
+	if err != nil {
+		return nil, err
+	}
+	return &ICensusValidatorFilterer{contract: contract}, nil
+}
+
+// bindICensusValidator binds a generic wrapper to an already deployed contract.
+func bindICensusValidator(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
+	parsed, err := ICensusValidatorMetaData.GetAbi()
+	if err != nil {
+		return nil, err
+	}
+	return bind.NewBoundContract(address, *parsed, caller, transactor, filterer), nil
+}
+
+// Call invokes the (constant) contract method with params as input values and
+// sets the output to result. The result type might be a single field for simple
+// returns, a slice of interfaces for anonymous returns and a struct for named
+// returns.
+func (_ICensusValidator *ICensusValidatorRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _ICensusValidator.Contract.ICensusValidatorCaller.contract.Call(opts, result, method, params...)
+}
+
+// Transfer initiates a plain transaction to move funds to the contract, calling
+// its default method if one is available.
+func (_ICensusValidator *ICensusValidatorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ICensusValidator.Contract.ICensusValidatorTransactor.contract.Transfer(opts)
+}
+
+// Transact invokes the (paid) contract method with params as input values.
+func (_ICensusValidator *ICensusValidatorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _ICensusValidator.Contract.ICensusValidatorTransactor.contract.Transact(opts, method, params...)
+}
+
+// Call invokes the (constant) contract method with params as input values and
+// sets the output to result. The result type might be a single field for simple
+// returns, a slice of interfaces for anonymous returns and a struct for named
+// returns.
+func (_ICensusValidator *ICensusValidatorCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _ICensusValidator.Contract.contract.Call(opts, result, method, params...)
+}
+
+// Transfer initiates a plain transaction to move funds to the contract, calling
+// its default method if one is available.
+func (_ICensusValidator *ICensusValidatorTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ICensusValidator.Contract.contract.Transfer(opts)
+}
+
+// Transact invokes the (paid) contract method with params as input values.
+func (_ICensusValidator *ICensusValidatorTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _ICensusValidator.Contract.contract.Transact(opts, method, params...)
+}
+
+// GetCensusRoot is a free data retrieval call binding the contract method 0xc1da8691.
+//
+// Solidity: function getCensusRoot() view returns(uint256 root)
+func (_ICensusValidator *ICensusValidatorCaller) GetCensusRoot(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _ICensusValidator.contract.Call(opts, &out, "getCensusRoot")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// GetCensusRoot is a free data retrieval call binding the contract method 0xc1da8691.
+//
+// Solidity: function getCensusRoot() view returns(uint256 root)
+func (_ICensusValidator *ICensusValidatorSession) GetCensusRoot() (*big.Int, error) {
+	return _ICensusValidator.Contract.GetCensusRoot(&_ICensusValidator.CallOpts)
+}
+
+// GetCensusRoot is a free data retrieval call binding the contract method 0xc1da8691.
+//
+// Solidity: function getCensusRoot() view returns(uint256 root)
+func (_ICensusValidator *ICensusValidatorCallerSession) GetCensusRoot() (*big.Int, error) {
+	return _ICensusValidator.Contract.GetCensusRoot(&_ICensusValidator.CallOpts)
+}
+
+// GetRootBlockNumber is a free data retrieval call binding the contract method 0x650e5fcf.
+//
+// Solidity: function getRootBlockNumber(uint256 root) view returns(uint256 blockNumber)
+func (_ICensusValidator *ICensusValidatorCaller) GetRootBlockNumber(opts *bind.CallOpts, root *big.Int) (*big.Int, error) {
+	var out []interface{}
+	err := _ICensusValidator.contract.Call(opts, &out, "getRootBlockNumber", root)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// GetRootBlockNumber is a free data retrieval call binding the contract method 0x650e5fcf.
+//
+// Solidity: function getRootBlockNumber(uint256 root) view returns(uint256 blockNumber)
+func (_ICensusValidator *ICensusValidatorSession) GetRootBlockNumber(root *big.Int) (*big.Int, error) {
+	return _ICensusValidator.Contract.GetRootBlockNumber(&_ICensusValidator.CallOpts, root)
+}
+
+// GetRootBlockNumber is a free data retrieval call binding the contract method 0x650e5fcf.
+//
+// Solidity: function getRootBlockNumber(uint256 root) view returns(uint256 blockNumber)
+func (_ICensusValidator *ICensusValidatorCallerSession) GetRootBlockNumber(root *big.Int) (*big.Int, error) {
+	return _ICensusValidator.Contract.GetRootBlockNumber(&_ICensusValidator.CallOpts, root)
+}
+
+// GetTotalVotingPowerAtRoot is a free data retrieval call binding the contract method 0x21541146.
+//
+// Solidity: function getTotalVotingPowerAtRoot(uint256 root) view returns(uint256 totalVotingPower)
+func (_ICensusValidator *ICensusValidatorCaller) GetTotalVotingPowerAtRoot(opts *bind.CallOpts, root *big.Int) (*big.Int, error) {
+	var out []interface{}
+	err := _ICensusValidator.contract.Call(opts, &out, "getTotalVotingPowerAtRoot", root)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// GetTotalVotingPowerAtRoot is a free data retrieval call binding the contract method 0x21541146.
+//
+// Solidity: function getTotalVotingPowerAtRoot(uint256 root) view returns(uint256 totalVotingPower)
+func (_ICensusValidator *ICensusValidatorSession) GetTotalVotingPowerAtRoot(root *big.Int) (*big.Int, error) {
+	return _ICensusValidator.Contract.GetTotalVotingPowerAtRoot(&_ICensusValidator.CallOpts, root)
+}
+
+// GetTotalVotingPowerAtRoot is a free data retrieval call binding the contract method 0x21541146.
+//
+// Solidity: function getTotalVotingPowerAtRoot(uint256 root) view returns(uint256 totalVotingPower)
+func (_ICensusValidator *ICensusValidatorCallerSession) GetTotalVotingPowerAtRoot(root *big.Int) (*big.Int, error) {
+	return _ICensusValidator.Contract.GetTotalVotingPowerAtRoot(&_ICensusValidator.CallOpts, root)
+}
+
+// ICensusValidatorWeightChangedIterator is returned from FilterWeightChanged and is used to iterate over the raw logs and unpacked data for WeightChanged events raised by the ICensusValidator contract.
+type ICensusValidatorWeightChangedIterator struct {
+	Event *ICensusValidatorWeightChanged // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *ICensusValidatorWeightChangedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(ICensusValidatorWeightChanged)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(ICensusValidatorWeightChanged)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *ICensusValidatorWeightChangedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *ICensusValidatorWeightChangedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// ICensusValidatorWeightChanged represents a WeightChanged event raised by the ICensusValidator contract.
+type ICensusValidatorWeightChanged struct {
+	Account        common.Address
+	PreviousWeight *big.Int
+	NewWeight      *big.Int
+	Raw            types.Log // Blockchain specific contextual infos
+}
+
+// FilterWeightChanged is a free log retrieval operation binding the contract event 0xee82339564ef9f72eccdbb67b46a62198422524ab9c7e3fcbdd194fa1b46461b.
+//
+// Solidity: event WeightChanged(address indexed account, uint88 previousWeight, uint88 newWeight)
+func (_ICensusValidator *ICensusValidatorFilterer) FilterWeightChanged(opts *bind.FilterOpts, account []common.Address) (*ICensusValidatorWeightChangedIterator, error) {
+
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+
+	logs, sub, err := _ICensusValidator.contract.FilterLogs(opts, "WeightChanged", accountRule)
+	if err != nil {
+		return nil, err
+	}
+	return &ICensusValidatorWeightChangedIterator{contract: _ICensusValidator.contract, event: "WeightChanged", logs: logs, sub: sub}, nil
+}
+
+// WatchWeightChanged is a free log subscription operation binding the contract event 0xee82339564ef9f72eccdbb67b46a62198422524ab9c7e3fcbdd194fa1b46461b.
+//
+// Solidity: event WeightChanged(address indexed account, uint88 previousWeight, uint88 newWeight)
+func (_ICensusValidator *ICensusValidatorFilterer) WatchWeightChanged(opts *bind.WatchOpts, sink chan<- *ICensusValidatorWeightChanged, account []common.Address) (event.Subscription, error) {
+
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+
+	logs, sub, err := _ICensusValidator.contract.WatchLogs(opts, "WeightChanged", accountRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(ICensusValidatorWeightChanged)
+				if err := _ICensusValidator.contract.UnpackLog(event, "WeightChanged", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseWeightChanged is a log parse operation binding the contract event 0xee82339564ef9f72eccdbb67b46a62198422524ab9c7e3fcbdd194fa1b46461b.
+//
+// Solidity: event WeightChanged(address indexed account, uint88 previousWeight, uint88 newWeight)
+func (_ICensusValidator *ICensusValidatorFilterer) ParseWeightChanged(log types.Log) (*ICensusValidatorWeightChanged, error) {
+	event := new(ICensusValidatorWeightChanged)
+	if err := _ICensusValidator.contract.UnpackLog(event, "WeightChanged", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}

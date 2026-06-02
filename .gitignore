@@ -1,0 +1,14 @@
+out/
+cache/
+broadcast/
+
+.env
+.env.*
+!.env.example
+
+node_modules/
+coverage/
+lcov.info
+
+*.log
+.DS_Store

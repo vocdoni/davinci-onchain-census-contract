@@ -1,0 +1,15 @@
+{
+    "name": "@vocdoni/onchain-census-contract",
+    "version": "0.1.0",
+    "license": "AGPL-3.0-or-later",
+    "scripts": {
+        "build": "forge build",
+        "test": "forge test",
+        "fmt:check": "forge fmt --check"
+    },
+    "dependencies": {
+        "@openzeppelin/contracts": "^5.4.0",
+        "@vocdoni/davinci-contracts": "^0.0.37",
+        "@zk-kit/lean-imt.sol": "^2.0.1"
+    }
+}

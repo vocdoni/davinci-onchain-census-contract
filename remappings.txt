@@ -1,0 +1,5 @@
+forge-std/=lib/forge-std/src/
+poseidon-solidity/=lib/poseidon-solidity/contracts/
+zk-kit.solidity/=lib/zk-kit.solidity/
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+davinci-contracts/=lib/davinci-contracts/

@@ -1,0 +1,87 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ICensusValidator",
+  "sourceName": "src/interfaces/ICensusValidator.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint88",
+          "name": "previousWeight",
+          "type": "uint88"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint88",
+          "name": "newWeight",
+          "type": "uint88"
+        }
+      ],
+      "name": "WeightChanged",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "getCensusRoot",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "root",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "root",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRootBlockNumber",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "blockNumber",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "root",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTotalVotingPowerAtRoot",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalVotingPower",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
