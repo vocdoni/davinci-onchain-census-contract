@@ -9,7 +9,7 @@
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git
 [submodule "lib/poseidon-solidity"]
 	path = lib/poseidon-solidity
-	url = https://github.com/chancehudson/poseidon-solidity.git
+	url = https://github.com/vocdoni/poseidon-solidity
 [submodule "lib/zk-kit.solidity"]
 	path = lib/zk-kit.solidity
 	url = https://github.com/zk-kit/zk-kit.solidity.git
