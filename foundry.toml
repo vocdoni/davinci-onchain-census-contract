@@ -3,6 +3,8 @@ src = "src"
 out = "out"
 libs = ["lib"]
 solc_version = "0.8.28"
+# Shared slot vectors (copy of davinci-zkvm rust-sdk/testdata/slot.json).
+fs_permissions = [{ access = "read", path = "./test/vectors" }]
 remappings = [
   "forge-std/=lib/forge-std/src/",
   "poseidon-solidity/=lib/poseidon-solidity/contracts/",
