@@ -1,0 +1,70 @@
+# Docker Compose profiles:
+# - test:  forge fmt --check, forge build --sizes and forge test, as CI runs them.
+# - local: an anvil chain on ANVIL_PORT with PoseidonT3 and an OwnedCensus
+#          deployed.
+#
+# The forge services build the image from this checkout (submodules included)
+# every time, so they always run the current sources. anvil runs the stock
+# Foundry image of the same version.
+
+x-census: &census
+  build:
+    context: .
+    args:
+      FOUNDRY_VERSION: ${FOUNDRY_VERSION:-v1.8.3}
+  image: vocdoni/davinci-onchain-census-contract:local
+  pull_policy: build
+
+services:
+  test:
+    profiles: ["test"]
+    <<: *census
+    command:
+      - |
+        set -e
+        forge fmt --check
+        forge build --sizes
+        forge test
+
+  anvil:
+    profiles: ["local"]
+    image: ghcr.io/foundry-rs/foundry:${FOUNDRY_VERSION:-v1.8.3}
+    command: ["exec anvil --host 0.0.0.0 --chain-id 31337 --hardfork osaka --block-time ${ANVIL_BLOCK_TIME:-1}"]
+    ports:
+      - "${ANVIL_PORT:-8545}:8545"
+    healthcheck:
+      test: ["CMD", "cast", "block-number", "--rpc-url", "http://localhost:8545"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  # Deploys once per chain from anvil's dev account 0 (standard test mnemonic),
+  # which owns the census. PoseidonT3 goes to its canonical address through the
+  # deterministic deployment proxy anvil ships with, as on a public chain.
+  deploy-local:
+    profiles: ["local"]
+    <<: *census
+    depends_on:
+      anvil:
+        condition: service_healthy
+    environment:
+      ETH_RPC_URL: http://anvil:8545
+    command:
+      - |
+        set -e
+        key=$$(cast wallet private-key "test test test test test test test test test test test junk")
+        deployer=$$(cast wallet address "$$key")
+        proxy=0x4e59b44847b379578588920ca78fbf26c0b4956c
+        poseidon=0x3333333C0A88F9BE4fd23ed0536F9B6c427e3B93
+        if [ "$$(cast nonce "$$deployer")" = 0 ]; then
+          data=$$(sed -n "s/^ *data: '\(0x[0-9a-fA-F]*\)'.*/\1/p" lib/poseidon-solidity/deploy/PoseidonT3.js)
+          cast send --private-key "$$key" "$$proxy" "$$data" > /dev/null
+          [ "$$(cast code "$$poseidon")" != 0x ] || { echo "PoseidonT3 not at $$poseidon"; exit 1; }
+          forge create src/OwnedCensus.sol:OwnedCensus --private-key "$$key" --broadcast \
+            --libraries "lib/poseidon-solidity/contracts/PoseidonT3.sol:PoseidonT3:$$poseidon"
+        else
+          echo "Already deployed."
+        fi
+        echo "PoseidonT3:  $$poseidon"
+        echo "OwnedCensus: $$(cast compute-address "$$deployer" --nonce 1 | awk '{print $$NF}')"
+        echo "Owner:       $$deployer"

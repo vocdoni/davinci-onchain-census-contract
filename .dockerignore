@@ -1,0 +1,12 @@
+# Only what forge needs; nothing untracked or local (.env, build output)
+# reaches the image.
+*
+!foundry.toml
+!remappings.txt
+!src
+!test
+!lib
+!LICENSE
+
+**/.git
+**/node_modules

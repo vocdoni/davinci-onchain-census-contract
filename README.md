@@ -180,6 +180,18 @@ make test
 
 `OnchainCensus` is abstract, so it cannot be deployed directly. Deploy a concrete contract that inherits it, such as `OwnedCensus`. The bytecode links the `PoseidonT3` library from `lib/poseidon-solidity`, which deploys through a deterministic proxy to `0x3333333C0A88F9BE4fd23ed0536F9B6c427e3B93` on any EVM chain (see its README). On a fresh chain, deploy it there first, then link the census against that address.
 
+## Docker
+
+`docker-compose.yml` runs Foundry (`FOUNDRY_VERSION`, default v1.8.3) in an image built from this checkout, submodules included, so check them out first.
+
+```sh
+docker compose --profile test run --rm test   # forge fmt --check, forge build --sizes, forge test
+docker compose --profile local up -d          # anvil with an OwnedCensus deployed
+docker compose --profile local down           # the chain is gone after this
+```
+
+`local` starts anvil on port `ANVIL_PORT` (default 8545): chain id 31337, Osaka, blocks every `ANVIL_BLOCK_TIME` seconds (default 1). It deploys `PoseidonT3` at `0x3333333C0A88F9BE4fd23ed0536F9B6c427e3B93` through the deterministic deployment proxy, then an `OwnedCensus` at `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512` linked to it, owned by anvil's account 0 (`0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266`), which adds members with `addMember`.
+
 ## License
 
 AGPL-3.0-or-later
