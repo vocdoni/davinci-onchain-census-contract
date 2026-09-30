@@ -3,12 +3,11 @@ pragma solidity 0.8.28;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-// zk-kit Lean-IMT
 import {InternalLeanIMT, LeanIMTData} from "zk-kit.solidity/packages/lean-imt/contracts/InternalLeanIMT.sol";
 
 import {ICensusValidator} from "davinci-contracts/src/interfaces/ICensusValidator.sol";
 
-/// @notice Base contract for on-chain census implementations backed by a Lean-IMT.
+/// @notice Base contract for append-only, weighted on-chain censuses backed by a Lean-IMT.
 /// @dev Implementations should run their own admission guards and call {_addToCensus}.
 abstract contract OnchainCensus is ICensusValidator, Ownable {
     using InternalLeanIMT for LeanIMTData;
@@ -26,7 +25,7 @@ abstract contract OnchainCensus is ICensusValidator, Ownable {
     // ====================================================
     // DAVINCI ballot slots
     // ====================================================
-    // slot = 0x10 + be64(sha256("davinci-slot-v1" || address)[0..8]) mod (2^63 - 16),
+    // slot = 0x10 + (be64(sha256("davinci-slot-v1" || address)[0..8]) mod (2^63 - 16)),
     // the Merkle-census ballot key the davinci-zkvm guest derives from the voter address.
     bytes15 private constant SLOT_DOMAIN = "davinci-slot-v1";
     uint64 private constant SLOT_MIN = 0x10;
@@ -64,6 +63,9 @@ abstract contract OnchainCensus is ICensusValidator, Ownable {
     // ICensusValidator
     // ====================================================
 
+    /// @notice Last block in which `root` was the census root: `block.number` for the
+    /// current root, the replacing block for an older one, 0 for a root never held.
+    /// @dev Replaced roots are never evicted.
     function getRootBlockNumber(uint256 root) external view override returns (uint256 blockNumber) {
         if (root == 0) return 0;
         if (root == _currentRoot) return block.number;
@@ -84,6 +86,11 @@ abstract contract OnchainCensus is ICensusValidator, Ownable {
     // Internal: census insertion
     // ====================================================
 
+    /// @dev Adds `user` with `weight`. Reverts on the zero address or an existing member
+    /// (`AlreadyRegisteredAddress`), a zero weight (`InvalidCensusWeight`), or a ballot slot
+    /// held by another member (`SlotTaken`).
+    /// @return leaf The member's leaf, `(address << 88) | weight`.
+    /// @return newRoot The census root after the insert.
     function _addToCensus(address user, uint88 weight) internal returns (uint256 leaf, uint256 newRoot) {
         if (user == address(0)) revert AlreadyRegisteredAddress();
         if (weight == 0) revert InvalidCensusWeight();
@@ -119,11 +126,16 @@ abstract contract OnchainCensus is ICensusValidator, Ownable {
         _currentRoot = newRoot;
     }
 
-    // Convenience getters
+    // ====================================================
+    // Getters
+    // ====================================================
+
+    /// @notice Weight of `user`; 0 for a non-member.
     function weightOf(address user) external view returns (uint88) {
         return _weightOf[user];
     }
 
+    /// @notice Member holding `slot`; the zero address if the slot is free.
     function slotOwner(uint64 slot) external view returns (address owner) {
         return _slotOwner[slot];
     }
@@ -140,6 +152,7 @@ abstract contract OnchainCensus is ICensusValidator, Ownable {
         return _totalVotingPower;
     }
 
+    /// @notice Tree leaf of `user`, `(address << 88) | weight`; 0 for a non-member.
     function leafOf(address user) external view returns (uint256) {
         uint88 weight = _weightOf[user];
         if (weight == 0) return 0;
