@@ -3,19 +3,20 @@ pragma solidity 0.8.28;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-import {InternalLeanIMT, LeanIMTData} from "zk-kit.solidity/packages/lean-imt/contracts/InternalLeanIMT.sol";
+import {KeccakLeanIMT, KeccakLeanIMTData} from "./KeccakLeanIMT.sol";
 
 import {ICensusValidator} from "davinci-contracts/src/interfaces/ICensusValidator.sol";
 
-/// @notice Base contract for append-only, weighted on-chain censuses backed by a Lean-IMT.
+/// @notice Base contract for append-only, weighted on-chain censuses backed by a Keccak
+/// lean IMT.
 /// @dev Implementations should run their own admission guards and call {_addToCensus}.
 abstract contract OnchainCensus is ICensusValidator, Ownable {
-    using InternalLeanIMT for LeanIMTData;
+    using KeccakLeanIMT for KeccakLeanIMTData;
 
     // ====================================================
     // Census / weights
     // ====================================================
-    LeanIMTData private _tree;
+    KeccakLeanIMTData private _tree;
 
     // Private (with explicit getters) so a derived contract cannot clear a member and
     // register it again, or free a slot for a colliding address.

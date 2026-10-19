@@ -12,9 +12,14 @@ A member is an address with a weight in `[1, 2^88 - 1]`. Its leaf is
 leaf = (uint160(address) << 88) | weight
 ```
 
-and leaves go into a zk-kit Lean-IMT hashed with PoseidonT3 over BN254, the same tree as
-davinci-node's lean-imt-go (the tests replay lean-imt-go and davinci-node vectors). The
-root is 0 until the first member joins.
+and leaves go into `KeccakLeanIMT`, an insert-only lean incremental Merkle tree derived
+from zk-kit's Lean-IMT: a node without a right sibling moves up unhashed, and an internal
+node is `keccak256(abi.encode(left, right))`. It is the tree lean-imt-go builds with the
+go-sdk `KeccakHasher` and the tree the davinci-zkvm guest verifies (the tests replay the
+shared `test/vectors/leanimt.json`). Nodes and roots are full 256-bit values, most of them
+above the BN254 modulus; nothing reduces them. The root is 0 until the first member joins.
+`_insert` refuses a zero leaf and a leaf of 2^248 or more, the shape the guest enforces;
+the tree keeps no leaf index, since `_addToCensus` already refuses a repeated address.
 
 The census is append-only with fixed weights. The tree, the weights, the slot owners and
 the insert path are `private`, so a derived contract can only add members through
@@ -79,5 +84,6 @@ process was created cannot be used.
 
 The `main` branch keeps a ring of the last 100 roots and has no slot check. This line
 (`davinci-zkvm`) checks slot uniqueness, keeps every root and makes all census storage
-private. The storage layouts differ, so a census deployed from `main` cannot be upgraded
-to this one: deploy a new contract.
+private, and hashes its tree with Keccak-256 instead of Poseidon. The storage layouts
+and roots differ, so a census deployed from `main` cannot be upgraded to this one: deploy a
+new contract.

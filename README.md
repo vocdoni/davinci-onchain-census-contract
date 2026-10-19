@@ -12,7 +12,7 @@ weights and events.
 ## Overview
 
 A member is an address with a weight. The census stores members as leaves of a lean
-incremental Merkle tree (zk-kit Lean-IMT, Poseidon), keeps every root the tree has had
+incremental Merkle tree hashed with Keccak-256 (`KeccakLeanIMT`), keeps every root the tree has had
 together with the total voting power at that root, and implements `ICensusValidator` from
 [davinci-contracts](https://github.com/vocdoni/davinci-contracts). A process created with an
 on-chain census records the contract address instead of a fixed root. The
@@ -45,13 +45,13 @@ docker compose --profile local up -d
 ```
 
 The chain listens on `http://localhost:8545` (chain id 31337). The census is at
-`0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`, owned by anvil's first dev account. Add a
+`0x5FbDB2315678afecb367f032d93F642f64180aa3`, owned by anvil's first dev account. Add a
 member and read the new root:
 
 ```sh
 RPC_URL=http://localhost:8545
 OWNER_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80  # anvil account 0
-CENSUS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+CENSUS=0x5FbDB2315678afecb367f032d93F642f64180aa3
 
 cast send $CENSUS "addMember(address,uint88)" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 1 \
   --rpc-url $RPC_URL --private-key $OWNER_KEY
@@ -66,27 +66,13 @@ override the port, the block time and the Foundry image.
 
 ### Deploy a census
 
-Run these from the repository root, with `RPC_URL` pointing at your chain and `OWNER_KEY`
-holding the key of the account that deploys, and will own, the census.
-
-The census links the `PoseidonT3` library, which has the same address on every EVM chain
-because it is deployed through the deterministic deployment proxy. Check that it exists on
-your chain, and deploy it once if it does not:
-
-```sh
-POSEIDON=0x3333333C0A88F9BE4fd23ed0536F9B6c427e3B93
-cast code $POSEIDON --rpc-url $RPC_URL  # prints 0x if missing
-
-data=$(sed -n "s/^ *data: '\(0x[0-9a-fA-F]*\)'.*/\1/p" lib/poseidon-solidity/deploy/PoseidonT3.js)
-cast send 0x4e59b44847b379578588920ca78fbf26c0b4956c "$data" --rpc-url $RPC_URL --private-key $OWNER_KEY
-```
-
-Then deploy an `OwnedCensus`:
+Run this from the repository root, with `RPC_URL` pointing at your chain and `OWNER_KEY`
+holding the key of the account that deploys, and will own, the census. The census links no
+library:
 
 ```sh
 forge create src/OwnedCensus.sol:OwnedCensus --broadcast \
-  --rpc-url $RPC_URL --private-key $OWNER_KEY \
-  --libraries lib/poseidon-solidity/contracts/PoseidonT3.sol:PoseidonT3:$POSEIDON
+  --rpc-url $RPC_URL --private-key $OWNER_KEY
 ```
 
 Ownership is OpenZeppelin `Ownable`: `transferOwnership` hands the census to another
@@ -173,14 +159,11 @@ forge install vocdoni/davinci-onchain-census-contract@davinci-zkvm
 remappings = [
   "davinci-onchain-census-contract/=lib/davinci-onchain-census-contract/",
   "davinci-contracts/=lib/davinci-onchain-census-contract/lib/davinci-contracts/",
-  "zk-kit.solidity/=lib/davinci-onchain-census-contract/lib/zk-kit.solidity/",
-  "poseidon-solidity/=lib/davinci-onchain-census-contract/lib/poseidon-solidity/contracts/",
   "@openzeppelin/contracts/=lib/davinci-onchain-census-contract/lib/openzeppelin-contracts/contracts/",
 ]
 ```
 
-Deploy it like `OwnedCensus`, linking
-`lib/davinci-onchain-census-contract/lib/poseidon-solidity/contracts/PoseidonT3.sol:PoseidonT3`.
+Deploy it like `OwnedCensus`.
 
 ### Read the census
 
@@ -219,8 +202,20 @@ forge test
 
 `make build`, `make test` and `make fmt` wrap the forge commands, and
 `docker compose --profile test run --rm test` runs the CI checks in the Foundry image.
-`test/vectors/slot.json` is a copy of davinci-zkvm's `rust-sdk/testdata/slot.json`; refresh
-it when those vectors change.
+`test/vectors/slot.json` and `test/vectors/leanimt.json` are copies of davinci-zkvm's
+`rust-sdk/testdata/slot.json` and `leanimt.json`; refresh them when those vectors change.
+
+### Insert gas
+
+`forge test --mc CensusGasTest -vv` prints the gas of the `addMember` call that brings the
+tree to a given size (solc 0.8.28, this repository's `foundry.toml`):
+
+| Tree size after the insert | Keccak tree | Poseidon tree (before) |
+|---:|---:|---:|
+| 1 | 190,127 | 212,775 |
+| 2 | 183,580 | 228,787 |
+| 16 | 153,522 | 259,570 |
+| 1024 | 167,910 | 395,034 |
 
 ## License
 

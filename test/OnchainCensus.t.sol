@@ -3,26 +3,14 @@ pragma solidity 0.8.28;
 
 import {Test, stdStorage, StdStorage} from "forge-std/Test.sol";
 
-import {InternalLeanIMT, LeanIMTData} from "zk-kit.solidity/packages/lean-imt/contracts/InternalLeanIMT.sol";
-
 import {ICensusValidator} from "davinci-contracts/src/interfaces/ICensusValidator.sol";
 
 import {OnchainCensus} from "../src/OnchainCensus.sol";
+import {KeccakLeanIMTHarness} from "./KeccakLeanIMT.t.sol";
 
 contract OnchainCensusHarness is OnchainCensus {
     function addToCensus(address user, uint88 weight) external returns (uint256 leaf, uint256 root) {
         return _addToCensus(user, weight);
-    }
-}
-
-// Raw zk-kit tree, for vectors whose leaves are not packed (address, weight) pairs.
-contract LeanIMTHarness {
-    using InternalLeanIMT for LeanIMTData;
-
-    LeanIMTData private _tree;
-
-    function insert(uint256 leaf) external returns (uint256) {
-        return _tree._insert(leaf);
     }
 }
 
@@ -101,18 +89,19 @@ contract OnchainCensusTest is Test {
     }
 
     // ------------------------------------------------------------------
-    // lean-imt-go vectors
+    // lean-imt-go vectors (go-sdk KeccakHasher)
     // ------------------------------------------------------------------
 
-    // Vector A: member i is address 0x1000+i with weight i+1.
+    // Vector A: member i is address 0x1000+i with weight i+1. Roots 1..5 are above the
+    // BN254 modulus.
     function testRootsMatchLeanImtGoVectorA() public {
         uint256[6] memory want = [
             uint256(1267650600228229401496703205377),
-            15094032537238156720317467960389034171129676152589821821957878146562052894452,
-            5190215559160309533219683645032356100962361543378348527420750449624774968242,
-            2291814171996210063961055231206559744649947849216894372526045825887408168708,
-            10065734438162920166155569821862511547197944273799997300629969101407964901942,
-            21654116119424204881355884684087328525315229191070999362500940276414941399884
+            105792291677795102622622719249240717138379594905581414561624949922989669084701,
+            40440525674650805399022830324082008292857011586528737744254297238571467994890,
+            47816645326343429212834647734977538926977696183042526155951616149923679937003,
+            89441866141586882830905230501830576803437259706165543977322595200906102220797,
+            78853546982023441117728848780497158261952210388852847806633614818970076149765
         ];
         for (uint256 i = 0; i < want.length; i++) {
             (, uint256 root) = census.addToCensus(address(uint160(0x1000 + i)), uint88(i + 1));
@@ -136,19 +125,19 @@ contract OnchainCensusTest is Test {
             census.addToCensus(users[i], weights[i]);
         }
         assertEq(census.leafOf(users[0]), 30375291384970416511893979679789548485304528155904142667949947072733511683);
-        assertEq(census.getCensusRoot(), 2787380653956260171806300121381944173535678873703019698747166416543300224801);
+        assertEq(census.getCensusRoot(), 67734935619498903356943765458459728301261057922995153565775884106586481773780);
     }
 
     // Vector C: raw leaves 1..5. They are not packed (address, weight) leaves (address 0),
-    // so they go through the bare zk-kit tree the census wraps.
+    // so they go through the bare Keccak tree the census wraps.
     function testRawLeavesMatchLeanImtGoVectorC() public {
-        LeanIMTHarness tree = new LeanIMTHarness();
+        KeccakLeanIMTHarness tree = new KeccakLeanIMTHarness();
         uint256[5] memory want = [
             uint256(1),
-            7853200120776062878684798364095072458815029376092732009249414926327459813530,
-            13816780880028945690020260331303642730075999758909899334839547418969502592169,
-            3330844108758711782672220159612173083623710937399719017074673646455206473965,
-            11512324111804726054755717642058292259866309947044530224809882918003853859592
+            105409183525425523237923285454331214386340807945685310246717412709691342439136,
+            41284475257234908792700626306985277197652811982708732094152184811704779637787,
+            76772239757923229513585688451142950403869359304189514133944008798130633149750,
+            82250816769484612374681573293034782788002610942745044852337906653714271241558
         ];
         for (uint256 i = 0; i < want.length; i++) {
             assertEq(tree.insert(i + 1), want[i]);
@@ -265,7 +254,7 @@ contract OnchainCensusTest is Test {
         address a = address(0x1000);
         address b = address(0x1001);
         uint256 rootA = 1267650600228229401496703205377;
-        uint256 rootB = 15094032537238156720317467960389034171129676152589821821957878146562052894452;
+        uint256 rootB = 105792291677795102622622719249240717138379594905581414561624949922989669084701;
 
         vm.expectEmit(true, false, false, true, address(census));
         emit ICensusValidator.WeightChanged(a, 0, 1);

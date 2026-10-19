@@ -1,7 +1,6 @@
 # Docker Compose profiles:
 # - test:  forge fmt --check, forge build --sizes and forge test, as CI runs them.
-# - local: an anvil chain on ANVIL_PORT with PoseidonT3 and an OwnedCensus
-#          deployed.
+# - local: an anvil chain on ANVIL_PORT with an OwnedCensus deployed.
 #
 # The forge services build the image from this checkout (submodules included)
 # every time, so they always run the current sources. anvil runs the stock
@@ -39,8 +38,7 @@ services:
       retries: 30
 
   # Deploys once per chain from anvil's dev account 0 (standard test mnemonic),
-  # which owns the census. PoseidonT3 goes to its canonical address through the
-  # deterministic deployment proxy anvil ships with, as on a public chain.
+  # which owns the census. The census links no library.
   deploy-local:
     profiles: ["local"]
     <<: *census
@@ -54,17 +52,10 @@ services:
         set -e
         key=$$(cast wallet private-key "test test test test test test test test test test test junk")
         deployer=$$(cast wallet address "$$key")
-        proxy=0x4e59b44847b379578588920ca78fbf26c0b4956c
-        poseidon=0x3333333C0A88F9BE4fd23ed0536F9B6c427e3B93
         if [ "$$(cast nonce "$$deployer")" = 0 ]; then
-          data=$$(sed -n "s/^ *data: '\(0x[0-9a-fA-F]*\)'.*/\1/p" lib/poseidon-solidity/deploy/PoseidonT3.js)
-          cast send --private-key "$$key" "$$proxy" "$$data" > /dev/null
-          [ "$$(cast code "$$poseidon")" != 0x ] || { echo "PoseidonT3 not at $$poseidon"; exit 1; }
-          forge create src/OwnedCensus.sol:OwnedCensus --private-key "$$key" --broadcast \
-            --libraries "lib/poseidon-solidity/contracts/PoseidonT3.sol:PoseidonT3:$$poseidon"
+          forge create src/OwnedCensus.sol:OwnedCensus --private-key "$$key" --broadcast
         else
           echo "Already deployed."
         fi
-        echo "PoseidonT3:  $$poseidon"
-        echo "OwnedCensus: $$(cast compute-address "$$deployer" --nonce 1 | awk '{print $$NF}')"
+        echo "OwnedCensus: $$(cast compute-address "$$deployer" --nonce 0 | awk '{print $$NF}')"
         echo "Owner:       $$deployer"

@@ -69,7 +69,7 @@ contract OwnedCensusTest is Test {
             users[5],
             6,
             census.leafFor(users[5], 6),
-            21654116119424204881355884684087328525315229191070999362500940276414941399884,
+            78853546982023441117728848780497158261952210388852847806633614818970076149765,
             21
         );
         vm.prank(OWNER);
@@ -77,7 +77,7 @@ contract OwnedCensusTest is Test {
 
         assertEq(census.treeSize(), 6);
         assertEq(census.totalVotingPower(), 21);
-        assertEq(census.getCensusRoot(), 21654116119424204881355884684087328525315229191070999362500940276414941399884);
+        assertEq(census.getCensusRoot(), 78853546982023441117728848780497158261952210388852847806633614818970076149765);
     }
 
     function testAddMembersLengthMismatch() public {
